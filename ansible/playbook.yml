@@ -14,8 +14,7 @@
 
     - name: "Проверка наличия pip"
       ansible.builtin.command: python3 -m ensurepip
-      args:
-        creates: /usr/bin/pip3
+      creates: /usr/bin/pip3
 
   roles:
     - geerlingguy.docker
