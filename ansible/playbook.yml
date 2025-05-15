@@ -60,7 +60,7 @@
           MYSQL_USER: redmine
           MYSQL_PASSWORD: "{{ redmine_db_password }}"
         volumes:
-          - "{{ mysql_data_dir }}:/var/lib/mysql"  # ✔️ Bind-mount с правами 999
+          - "{{ mysql_data_dir }}:/var/lib/mysql"  
         networks:
           - name: redmine_network
         restart_policy: always
@@ -79,8 +79,9 @@
         group: "{{ ansible_user }}"
 
     - name: "Остановка временного веб-сервера на порту 3000"
-      ansible.builtin.shell: |
-        ps aux | grep 'http.server' | grep -v grep | awk '{print $2}' | xargs kill -9 2>/dev/null || true
+      ansible.builtin.shell:
+        cmd: |
+          ps aux | grep 'http.server' | grep -v grep | awk '{print $2}' | xargs kill -9 2>/dev/null || true
 
     - name: "Запуск контейнера Redmine"
       community.docker.docker_container:
