@@ -82,7 +82,9 @@
       ansible.builtin.shell: |
         set -o pipefail
         ps aux | grep 'http.server' | grep -v grep | awk '{print $2}' | xargs kill -9 2>/dev/null || true
+      register: stop_server
       changed_when: false
+      failed_when: "'No such process' in stop_server.stderr or stop_server.rc not in [0, 1]"
 
     - name: "Запуск контейнера Redmine"
       community.docker.docker_container:
