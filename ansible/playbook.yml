@@ -12,10 +12,6 @@
         state: present
         update_cache: true
 
-    - name: "Проверка наличия pip"
-      ansible.builtin.command: python3 -m ensurepip
-      creates: /usr/bin/pip3
-
   roles:
     - geerlingguy.docker
 
