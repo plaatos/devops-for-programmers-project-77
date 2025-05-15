@@ -1,0 +1,20 @@
+#cloud-config
+
+users:
+  - name: michel
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    shell: /bin/bash
+    home: /home/michel
+    create_home: true
+
+packages:
+  - mc
+
+runcmd:
+  # Создание index.html от имени пользователя michel
+  - [ sh, -c, 'sudo -u michel echo "Hello from server" > /home/michel/index.html' ]
+
+  # Запуск сервера от имени пользователя michel
+  - [ sh, -c, 'sudo -u michel nohup bash -c "cd /home/michel && exec python3 -m http.server 3000 --bind 0.0.0.0" > /home/michel/server.log 2>&1 &' ]
+
+final_message: "Cloud-init finished at: $TIMESTAMP"

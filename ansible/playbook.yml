@@ -1,0 +1,117 @@
+---
+- name: "Подготовка серверов (установка Docker и зависимостей)"
+  hosts: all
+  become: true
+  tags: ["prepare"]
+  tasks:
+    - name: "Установка Python и pip с помощью apt"
+      ansible.builtin.apt:
+        name:
+          - python3
+          - python3-pip
+        state: present
+        update_cache: true
+
+    - name: "Проверка наличия pip"
+      ansible.builtin.command: python3 -m ensurepip
+      args:
+        creates: /usr/bin/pip3
+
+  roles:
+    - geerlingguy.docker
+
+- name: "Развертывание Redmine с MySQL"
+  hosts: webservers
+  become: true
+  tags: ["redmine"]
+
+  tasks:
+    - name: "Создание каталогов для хранения данных"
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '750'
+      loop:
+        - "{{ redmine_data_dir }}"
+        - "{{ mysql_data_dir }}"
+
+    - name: "Установка прав на каталог БД (UID 999)"
+      ansible.builtin.file:
+        path: "{{ mysql_data_dir }}"
+        owner: 999
+        group: 999
+        mode: '0750'
+
+    - name: "Создание пользовательской сети Docker"
+      community.docker.docker_network:
+        name: redmine_network
+        driver: bridge
+        state: present
+
+    - name: "Загрузка образа MySQL"
+      community.docker.docker_image:
+        name: mysql:8.0
+        source: pull
+
+    - name: "Запуск контейнера MySQL"
+      community.docker.docker_container:
+        name: redmine_mysql
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
+          MYSQL_DATABASE: redmine
+          MYSQL_USER: redmine
+          MYSQL_PASSWORD: "{{ redmine_db_password }}"
+        volumes:
+          - "{{ mysql_data_dir }}:/var/lib/mysql"  # ✔️ Bind-mount с правами 999
+        networks:
+          - name: redmine_network
+        restart_policy: always
+
+    - name: "Загрузка образа Redmine"
+      community.docker.docker_image:
+        name: redmine:latest
+        source: pull
+
+    - name: "Генерация .env файла для Redmine"
+      ansible.builtin.template:
+        src: templates/redmine.env.j2
+        dest: /opt/redmine/.env
+        mode: '640'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: "Остановка временного веб-сервера на порту 3000"
+      ansible.builtin.shell: |
+        ps aux | grep 'http.server' | grep -v grep | awk '{print $2}' | xargs kill -9 2>/dev/null || true
+
+    - name: "Запуск контейнера Redmine"
+      community.docker.docker_container:
+        name: redmine_app
+        image: redmine:latest
+        ports:
+          - "{{ redmine_port }}:3000"
+        env_file: /opt/redmine/.env
+        volumes:
+          - "{{ redmine_data_dir }}:/usr/src/redmine/files"
+        networks:
+          - name: redmine_network
+        restart_policy: always
+
+- name: "Настройка мониторинга через Datadog"
+  hosts: webservers
+  become: true
+  tags: ["monitoring"]
+
+  tasks:
+    - name: "Установка Datadog collection"
+      ansible.builtin.command: ansible-galaxy collection install datadog.dd
+      args:
+        creates: "/home/{{ ansible_user }}/.ansible/collections/ansible_collections/datadog/dd"
+      delegate_to: localhost
+
+    - name: "Импорт роли Datadog Agent"
+      ansible.builtin.import_role:
+        name: datadog.dd.agent
