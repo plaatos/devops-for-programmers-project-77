@@ -108,8 +108,8 @@
 
   tasks:
     - name: "Установка Datadog collection"
-      ansible.builtin.command: ansible-galaxy collection install datadog.dd
-      args:
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection install datadog.dd
         creates: "/home/{{ ansible_user }}/.ansible/collections/ansible_collections/datadog/dd"
       delegate_to: localhost
 
