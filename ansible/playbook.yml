@@ -79,10 +79,10 @@
         group: "{{ ansible_user }}"
 
     - name: "Остановка временного веб-сервера на порту 3000"
-      ansible.builtin.shell: |
-        set -o pipefail
-        pkill -f 'http.server 3000'
-      args:
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          pkill -f 'http.server 3000'
         chdir: /home/michel
       register: stop_server
       changed_when: false
