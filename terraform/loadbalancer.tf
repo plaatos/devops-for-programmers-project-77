@@ -1,9 +1,9 @@
 # loadbalancer.tf
 
 resource "yandex_alb_load_balancer" "app-lb" {
-  name        = "load-balancer"
-  folder_id   = var.folder_id
-  network_id  = yandex_vpc_network.default-network.id
+  name       = "load-balancer"
+  folder_id  = var.folder_id
+  network_id = yandex_vpc_network.default-network.id
 
   allocation_policy {
     location {

@@ -3,13 +3,13 @@ resource "yandex_vpc_security_group" "alb-ibi" {
   network_id = yandex_vpc_network.default-network.id
 
   ingress {
-    protocol         = "TCP"
-    from_port        = 3000
-    to_port          = 3000
+    protocol          = "TCP"
+    from_port         = 3000
+    to_port           = 3000
     predefined_target = "loadbalancer_healthchecks"
-    description      = "Allow ALB health checks on port 3000"
+    description       = "Allow ALB health checks on port 3000"
   }
-  
+
   ingress {
     protocol       = "TCP"
     from_port      = 3000
@@ -19,11 +19,11 @@ resource "yandex_vpc_security_group" "alb-ibi" {
   }
 
   ingress {
-    protocol         = "TCP"
-    from_port        = 30080
-    to_port          = 30080
+    protocol          = "TCP"
+    from_port         = 30080
+    to_port           = 30080
     predefined_target = "loadbalancer_healthchecks"
-    description      = "Allow ALB internal communication for health checks"
+    description       = "Allow ALB internal communication for health checks"
   }
 
   ingress {
@@ -33,7 +33,7 @@ resource "yandex_vpc_security_group" "alb-ibi" {
     v4_cidr_blocks = ["0.0.0.0/0"]
     description    = "Allow HTTP traffic from anywhere"
   }
-  
+
   ingress {
     protocol       = "TCP"
     from_port      = 443

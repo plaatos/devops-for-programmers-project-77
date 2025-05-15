@@ -22,8 +22,8 @@ variable "zone" {
 }
 
 variable "ssh_keys" {
-  type      = string
-  default   = "michel:mock-ssh-key"
-  sensitive = true
+  type        = string
+  default     = "michel:mock-ssh-key"
+  sensitive   = true
   description = "SSH-ключи для доступа к ВМ"
 }
