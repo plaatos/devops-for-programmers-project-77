@@ -1,7 +1,12 @@
 # devops-for-programmers-project-77
 
 [![Actions Status](https://github.com/plaatos/devops-for-programmers-project-77/actions/workflows/hexlet-check.yml/badge.svg )](https://github.com/plaatos/devops-for-programmers-project-77/actions )
-[![Upmon Status](https://www.upmon.com/badge/63aaee31-2b07-4e54-91a2-5fcaef/IxKr_bO0-2.svg )](https://upmon.net/29cfdebb-3552-4726-9d9a-5996b04ee273 )
+
+## Доступ к приложению
+🔗 [Перейти к Redmine](https://test-step.ru )  
+![Upmon Status](https://www.upmon.com/badge/63aaee31-2b07-4e54-91a2-5fcaef/IxKr_bO0-2.svg )  [Мониторинг через Upmon](https://upmon.net/29cfdebb-3552-4726-9d9a-5996b04ee273 )  
+
+---
 
 ## Описание проекта
 
@@ -87,7 +92,7 @@ make ansible-deploy
 | `make wait-for-ssh`    | Ожидание доступности SSH на серверах  |
 | `make generate-inventory` | Генерация inventory.ini            |
 | `make ansible-deploy`  | Выполнить Ansible-плейбук             |
-| `ansible-clean`        | Очистка контейнеров на серверах       |
+| `make ansible-clean`   | Очистка контейнеров на серверах       |
 | `make terraform-destroy` | Удалить всю инфраструктуру          |
 | `make clean-artifacts` | Удалить временные файлы               |
 | `make status`          | Показать статус контейнеров           |
