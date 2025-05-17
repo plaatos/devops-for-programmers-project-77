@@ -1,29 +1,21 @@
 # Makefile
-
-TERRAFORM_DIR = terraform
-ANSIBLE_DIR = ansible
-
-# === Основные команды ===
-
 deploy: terraform-apply wait-for-ssh ansible-deploy
 	@echo "✅ Инфраструктура и приложение успешно развернуты"
 
 # === Terraform команды ===
+terraform-apply:
+	make -C terraform apply
 
 terraform-init:
-	cd $(TERRAFORM_DIR) && terraform init
-
-terraform-apply: terraform-init
-	cd $(TERRAFORM_DIR) && terraform apply -auto-approve
+	make -C terraform init
 
 terraform-destroy:
-	cd $(TERRAFORM_DIR) && terraform destroy -auto-approve || true
+	make -C terraform destroy
 
 # === Подготовка к Ansible ===
-
 wait-for-ssh:
 	@echo "⏳ Ожидаем доступность SSH на серверах..."
-	@cd $(TERRAFORM_DIR) && \
+	@cd terraform && \
 		IPS_JSON=$$(terraform output -json server_public_ips); \
 		if [ -z "$$IPS_JSON" ]; then \
 			echo "❌ Не удалось получить IP-адреса"; \
@@ -38,34 +30,25 @@ wait-for-ssh:
 			sleep 5; \
 		done; \
 		echo "✅ SSH доступен на $$ip"; \
-	done;
+	done; \
 	@echo "✅ Все серверы доступны по SSH"
 
-generate-inventory:
-	@cd $(TERRAFORM_DIR) && ../ansible/generate_inventory.sh
-	@echo "✅ inventory.ini сгенерирован"
-
 # === Ansible команды ===
+ansible-deploy:
+	make -C ansible deploy
 
-ansible-deploy: generate-inventory
-	cd $(ANSIBLE_DIR) && ansible-playbook -i inventory.ini playbook.yml --vault-password-file <(echo 'secret')
-		
 ansible-clean:
-	@echo "🧹 Очистка контейнеров на серверах..."
-	ansible all -i inventory.ini -m shell -a "docker stop redmine_app redmine_mysql || true" $(VAULT_PASS)
-	ansible all -i inventory.ini -m shell -a "docker rm redmine_app redmine_mysql || true" $(VAULT_PASS)
+	make -C ansible clean
 
 status:
-	cd $(ANSIBLE_DIR) && ansible all -i inventory.ini -m shell -a "docker ps -a"
+	make -C ansible status
 
 logs:
-	cd $(ANSIBLE_DIR) && ansible all -i inventory.ini -m shell -a "docker logs redmine_app"
-	cd $(ANSIBLE_DIR) && ansible all -i inventory.ini -m shell -a "docker logs redmine_mysql"
+	make -C ansible logs
 
 # === Очистка ===
-
 clean-artifacts:
-	rm -f $(ANSIBLE_DIR)/inventory.ini
+	rm -f ansible/inventory.ini
 
 clean: terraform-destroy clean-artifacts
 	@echo "✅ Инфраструктура и временные файлы удалены"
