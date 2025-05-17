@@ -4,6 +4,7 @@
 
 ## Доступ к приложению
 🔗 [Перейти к Redmine](https://test-step.ru )  
+
 ![Upmon Status](https://www.upmon.com/badge/63aaee31-2b07-4e54-91a2-5fcaef/IxKr_bO0-2.svg )  [Мониторинг через Upmon](https://upmon.net/29cfdebb-3552-4726-9d9a-5996b04ee273 )  
 
 ---
