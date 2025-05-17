@@ -4,6 +4,8 @@
 *.tfstate.*
 secrets.auto.tfvars
 terraform.tfvars
+terraform/.terraform.lock.hcl
+terraform/.terraformrc
 
 # Ansible
 ansible/group_vars/vault.yml
