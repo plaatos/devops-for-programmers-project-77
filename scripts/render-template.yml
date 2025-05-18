@@ -1,0 +1,10 @@
+# scripts/render-template.yml
+- name: Generate secrets.auto.tfvars from template
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Render secrets.auto.tfvars
+      ansible.builtin.template:
+        src: "{{ template_file }}"
+        dest: "{{ output_file }}"
+        mode: '0600'

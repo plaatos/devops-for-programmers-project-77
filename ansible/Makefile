@@ -1,10 +1,10 @@
 # ansible/Makefile
 generate-inventory:
-	../terraform/generate_inventory.sh
+	./generate_inventory.sh
 	@echo "✅ inventory.ini сгенерирован"
 
 deploy: generate-inventory
-	ansible-playbook -i inventory.ini playbook.yml --vault-password-file <(echo 'secret')
+	ansible-playbook -i inventory.ini playbook.yml --ask-vault-pass
 
 clean:
 	@echo "🧹 Очистка контейнеров на серверах..."

@@ -11,6 +11,6 @@ resource "yandex_dns_recordset" "test_step_ru" {
   type    = "A"
   ttl     = 300
   data = [
-    yandex_alb_load_balancer.app-lb.listener[0].endpoint[0].address[0].external_ipv4_address[0]
+    yandex_alb_load_balancer.app-lb.listener[0].endpoint[0].address[0].external_ipv4_address[0].address
   ]
 }

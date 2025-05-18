@@ -84,6 +84,7 @@
           set -o pipefail
           pkill -f 'http.server 3000'
         chdir: /home/michel
+        executable: /bin/bash
       register: stop_server
       changed_when: false
       failed_when: "'No such process' in stop_server.stderr or stop_server.rc not in [0, 1]"

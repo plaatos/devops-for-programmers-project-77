@@ -27,3 +27,9 @@ variable "ssh_keys" {
   sensitive   = true
   description = "SSH-ключи для доступа к ВМ"
 }
+
+variable "datadog_api_key" {
+  type      = string
+  default   = "mock-datadog-api-key"
+  sensitive = true
+}

@@ -3,11 +3,11 @@ deploy: terraform-apply wait-for-ssh ansible-deploy
 	@echo "✅ Инфраструктура и приложение успешно развернуты"
 
 # === Terraform команды ===
-terraform-apply:
-	make -C terraform apply
-
-terraform-init:
+terraform-init: generate-terraform-vars
 	make -C terraform init
+
+terraform-apply: terraform-init
+	make -C terraform apply
 
 terraform-destroy:
 	make -C terraform destroy
@@ -31,7 +31,7 @@ wait-for-ssh:
 		done; \
 		echo "✅ SSH доступен на $$ip"; \
 	done; \
-	@echo "✅ Все серверы доступны по SSH"
+	echo "✅ Все серверы доступны по SSH"
 
 # === Ansible команды ===
 ansible-deploy:
@@ -52,3 +52,7 @@ clean-artifacts:
 
 clean: terraform-destroy clean-artifacts
 	@echo "✅ Инфраструктура и временные файлы удалены"
+	
+generate-terraform-vars:
+	bash -c "ansible-playbook -i ansible/inventory.ini --ask-vault-pass -e \"template_file=../terraform/secrets.auto.tfvars.j2\" -e \"output_file=../terraform/secrets.auto.tfvars\" -e @ansible/group_vars/webservers/vault.yml scripts/render-template.yml"
+
